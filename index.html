@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Карта сплит-систем</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    body {
+      background: url("фон.jpg") no-repeat center top;
+      background-size: cover;
+    }
+    #restartBtn {
+      display: none;
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 6px 12px;
+      font-size: 12px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      z-index: 10;
+    }
+    #victoryMessage, #failureMessage {
+      display: none;
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      margin: 0;
+      z-index: 10;
+    }
+    #victoryMessage { color: #28a745; }
+    #failureMessage { color: #dc3545; }
+    #boardWrapper {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: auto;
+      background: rgba(0,0,0,0.7);
+      border-radius: 8px;
+      padding: 5px;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+      max-height: 100%;
+    }
+    table {
+      border-collapse: collapse;
+      margin: 0 auto;
+    }
+    th.top-header, td:not(.function-label) {
+      width: 30px;
+      max-width: 30px;
+      white-space: normal;
+      word-wrap: break-word;
+    }
+    .function-label {
+      background-color: #2a3f2a;
+      color: #eee;
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 1.1;
+      width: 140px;
+      padding: 2px;
+      font-size: 10px;
+    }
+    th, td {
+      border: 1px solid #666;
+      height: 20px;
+      background-color: #555;
+      color: #eee;
+      text-align: center;
+      vertical-align: middle;
+      cursor: pointer;
+      font-size: 10px;
+      user-select: none;
+      padding: 0;
+      margin: 0;
+    }
+    td.revealed { background-color: #ddd; color: #000; }
+    td.bomb     { background-color: red !important; color: white !important; }
+    td.flagged  { background-color: #f9e79f; color: #000; }
+    .top-header {
+      background-color: #3465d6;
+      color: #eee;
+      text-align: center;
+      font-size: 10px;
+    }
+    .confetti {
+      position: absolute;
+      font-size: 16px;
+      animation: rise 3s ease-out forwards;
+      z-index: 5;
+    }
+    @keyframes rise {
+      0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+      100% { opacity: 0; transform: translateY(-200px) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <button id="restartBtn" onclick="resetGame()">🔄</button>
+  <div id="victoryMessage">ПОБЕДА!</div>
+  <div id="failureMessage">ПРОВАЛ</div>
+  <div id="boardWrapper">
+    <table id="board"></table>
+  </div>
+  <script>
+    let gameOver = false, revealedCount = 0;
+    const equipmentNames = ["RS-PXI6 PRO","RS-PXI6","ABS-HE","RS-MUIN","RS-CBS4","RS-CST4","RS-CST4 PRO","AST-HE","RS-MST1"];
+    const functionLabels = [
+      "Управление через Wi-Fi (встроенный модуль)",
+      "Подключение Wi-Fi (модуль приобретается отдельно)",
+      "Работа на тепло при низких температурах",
+      "Работа на холод при низких температурах",
+      "3D воздушный поток",
+      "Блок ионизации воздуха",
+      "Self Clean или самоочистка",
+      "Интеллектуальная защита от образования наледи",
+      "Энергосбережение",
+      "Двухсторонний дренаж",
+      "Защита от утечек",
+      "Тихий режим",
+      "Интеллектуальная разморозка",
+      "Фильтр "Cold Catalyst"",
+      "Антикоррозийная защита внешнего блока",
+      "Держатель для ПДУ",
+      "Защита от плесени",
+      "Теплый пуск",
+      "Память расположения жалюзи",
+      "Кожух кранов внешнего блока",
+      "Функция I Feel"
+    ];
+    const fullBoard = [
+      [0,1,1,2,2,2,1,1,0],
+      [2,2,1,9,9,2,9,1,0],
+      [9,2,1,2,2,2,1,1,0],
+      [9,3,1,2,2,2,1,1,0],
+      [9,3,1,9,9,2,9,1,0],
+      [9,2,1,3,4,5,3,2,0],
+      [3,3,1,1,9,9,9,1,0],
+      [9,9,2,3,4,6,5,3,1],
+      [2,3,9,3,9,9,9,9,2],
+      [0,0,3,9,6,6,5,5,9],
+      [0,0,2,9,9,9,9,4,9],
+      [0,0,1,4,9,9,9,4,1],
+      [0,1,2,4,9,9,9,2,0],
+      [2,3,9,9,3,3,2,1,0],
+      [9,9,4,4,3,3,3,2,1],
+      [2,3,9,3,9,9,9,9,1],
+      [0,1,2,4,9,9,9,4,2],
+      [0,0,2,9,6,6,4,4,9],
+      [0,1,3,9,9,9,9,4,9],
+      [0,1,9,4,5,6,5,9,2],
+      [0,1,1,2,9,9,9,2,1]
+    ];
+    const totalSafe = fullBoard.flat().filter(c=>c!==9).length;
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      // header
+      const trh = document.createElement('tr');
+      trh.appendChild(document.createElement('th'));
+      equipmentNames.forEach(name => {
+        const th=document.createElement('th');
+        th.textContent = name; th.className='top-header'; trh.appendChild(th);
+      });
+      board.appendChild(trh);
+      fullBoard.forEach((row,y) => {
+        const tr=document.createElement('tr');
+        const fn=document.createElement('td');
+        fn.textContent=functionLabels[y]; fn.className='function-label'; tr.appendChild(fn);
+        row.forEach((v,x) => {
+          const td=document.createElement('td');
+          td.dataset.x=x; td.dataset.y=y;
+          td.addEventListener('click',() => { if(!gameOver && !td.classList.contains('flagged')) revealEmpty(x,y); });
+          td.addEventListener('contextmenu', e => {
+            if(gameOver) return; e.preventDefault();
+            td.classList.toggle('flagged'); td.textContent=td.classList.contains('flagged')?'🚩':'';
+          });
+          tr.appendChild(td);
+        });
+        board.appendChild(tr);
+      });
+    }
+    function revealEmpty(cx,cy) {
+      const stack=[[cx,cy]], vis=new Set();
+      while(stack.length) {
+        const [x,y]=stack.pop(), key=`${x},${y}`;
+        if(vis.has(key)) continue; vis.add(key);
+        const cell=document.querySelector(`td[data-x='${x}'][data-y='${y}']`);
+        if(!cell||cell.classList.contains('revealed')||cell.classList.contains('flagged')||gameOver) continue;
+        const v=fullBoard[y][x];
+        cell.classList.add('revealed'); revealedCount++;
+        if(v===9) {
+          cell.classList.remove('revealed');
+          cell.classList.add('bomb'); cell.textContent='💣';
+          gameOver=true;
+          document.getElementById('failureMessage').style.display='block';
+          document.getElementById('restartBtn').style.display='inline-block';
+          return;
+        }
+        cell.textContent=v||'';
+        if(v===0) {
+          for(let dx=-1; dx<=1; dx++) {
+            for(let dy=-1; dy<=1; dy++) {
+              const nx=x+dx, ny=y+dy;
+              if(nx>=0 && ny>=0 && ny<fullBoard.length && nx<fullBoard[0].length) {
+                stack.push([nx,ny]);
+              }
+            }
+          }
+        }
+      }
+      if(revealedCount>=totalSafe && !gameOver) {
+        gameOver=true;
+        document.getElementById('victoryMessage').style.display='block';
+        document.getElementById('restartBtn').style.display='inline-block';
+        createConfetti();
+      }
+    }
+    function resetGame() {
+      gameOver=false; revealedCount=0;
+      document.getElementById('restartBtn').style.display='none';
+      document.getElementById('victoryMessage').style.display='none';
+      document.getElementById('failureMessage').style.display='none';
+      renderBoard();
+    }
+    function createConfetti() {
+      const msg=document.getElementById('victoryMessage'), rect=msg.getBoundingClientRect();
+      for(let s of[-1,1]) for(let i=0;i<10;i++){
+        const c=document.createElement('div');
+        c.className='confetti'; c.textContent='🎉';
+        const L=rect.left+rect.width/2 + s*(10+Math.random()*rect.width/2);
+        c.style.left=L+'px'; c.style.top=rect.top+window.scrollY+'px';
+        document.body.appendChild(c);
+        setTimeout(() => document.body.removeChild(c), 3000);
+      }
+    }
+    renderBoard();
+  </script>
+</body>
+</html>
