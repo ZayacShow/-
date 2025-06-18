@@ -5,14 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Карта сплит-систем</title>
   <style>
-    body { font-family: sans-serif; background-color: #f5f5f5; padding: 20px; text-align: center; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    body {
+      /* Фон с корректным отображением */
+      background-image: url("фон.jpg");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
     #logo img { max-width: 200px; margin-bottom: 10px; }
     #victoryMessage, #failureMessage { display: none; font-size: 32px; margin: 10px; position: relative; }
     #victoryMessage { color: #28a745; }
     #failureMessage { color: #dc3545; }
     #boardWrapper { overflow-x: auto; display: inline-block; margin-top: 20px; position: relative; }
-    table { border-collapse: collapse; transform-origin: top left; margin: auto; }
-    th, td { border: 1px solid #666; width: 60px; height: 40px; text-align: center; vertical-align: middle; background-color: #555; cursor: pointer; font-size: 12px; color: #eee; }
+    table { border-collapse: collapse; transform-origin: top left; margin: auto; background: transparent; }
+    th, td { border: 1px solid #666; width: 60px; height: 40px; text-align: center; vertical-align: middle; background-color: rgba(0,0,0,0.3); cursor: pointer; font-size: 12px; color: #eee; }
     td.revealed { background-color: #ddd; color: #000; }
     td.bomb { background-color: #800000 !important; color: white !important; }
     td.flagged { background-color: #f9e79f; color: #000; }
@@ -24,7 +40,7 @@
   </style>
 </head>
 <body>
-  <div id="logo"><img src="ровекс ргб.png" alt="Логотип компании"></div>
+  <div id="logo"><img src="ровекс%20ргб.png" alt="Логотип компании" /></div>
   <button id="restartBtn" onclick="resetGame()">🔄 Начать заново</button>
   <div id="victoryMessage">ПОБЕДА!</div>
   <div id="failureMessage">ПРОВАЛ!</div>
