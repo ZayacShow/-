@@ -183,6 +183,51 @@ Catalyst`,
     ];
     const totalSafe = fullBoard.flat().filter(c=>c!==9).length;
 
+    function renderBoard() {
+  const b = document.getElementById('board');
+  b.innerHTML = '';
+
+  // Заголовок с названиями оборудования
+  const hr = document.createElement('tr');
+  const th0 = document.createElement('th');
+  hr.appendChild(th0);
+  equipmentNames.forEach(n => {
+    const th = document.createElement('th');
+    th.textContent = n;
+    hr.appendChild(th);
+  });
+  b.appendChild(hr);
+
+  // Строки игрового поля
+  fullBoard.forEach((row, y) => {
+    const tr = document.createElement('tr');
+    const lt = document.createElement('td');
+    lt.textContent = functionLabels[y];
+    lt.className = 'function-label';
+    tr.appendChild(lt);
+
+    row.forEach((_, x) => {
+      const td = document.createElement('td');
+      td.dataset.x = x;
+      td.dataset.y = y;
+      td.addEventListener('click', () => {
+        if (!gameOver && !td.classList.contains('flagged')) revealEmpty(x, y);
+      });
+      td.addEventListener('contextmenu', e => {
+        if (gameOver) return;
+        e.preventDefault();
+        if (!td.classList.contains('revealed')) {
+          td.classList.toggle('flagged');
+          td.textContent = td.classList.contains('flagged') ? '🚩' : '';
+        }
+      });
+      tr.appendChild(td);
+    });
+
+    b.appendChild(tr);
+  });
+}
+    
     function resetGame(){
       gameOver = false;
       revealedCount = 0;
