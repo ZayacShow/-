@@ -17,13 +17,14 @@
     }
 
     /* Фон */
-    body {
-      background-image: url('фон.jpg');
-      background-repeat: no-repeat;
-      background-position: center center;
-      background-size: cover;
-      font-family: sans-serif;
-    }
+    #bgContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url('фон.jpg') center/cover no-repeat;
+  overflow: hidden;
+  font-family: sans-serif; /* можно оставить здесь */
+}
 
     /* Кнопка рестарта и сообщения о результате */
     #restartBtn {
@@ -108,7 +109,7 @@
   </style>
 </head>
 <body>
-
+<div id="bgContainer">
   <button id="restartBtn" onclick="resetGame()">Начать заново</button>
   <div id="victoryMessage">ПОБЕДА!</div>
   <div id="failureMessage">ПРОВАЛ!</div>
@@ -116,7 +117,7 @@
   <div id="boardWrapper">
     <table id="board"></table>
   </div>
-
+ </div> <!-- /#bgContainer -->
   <script>
     let gameOver = false;
     let revealedCount = 0;
