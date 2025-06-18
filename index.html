@@ -196,7 +196,11 @@ Catalyst`,
       const msg = document.getElementById('victoryMessage');
       const rect = msg.getBoundingClientRect();
       for(let side of [-1,1]){
-        for(let i=0; i<10; i++){...}
+        for(let i=0; i<10; i++){  
+          const c = document.createElement('div');
+  c.textContent = '🎉';
+  // … остальной код по созданию и анимации конфетти
+        }
       }
     }
     // остальной скрипт без изменений
