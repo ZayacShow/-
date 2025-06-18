@@ -192,18 +192,27 @@ Catalyst`,
       renderBoard();
     }
 
-    function createConfetti(){
-      const msg = document.getElementById('victoryMessage');
-      const rect = msg.getBoundingClientRect();
-      for(let side of [-1,1]){
-        for(let i=0; i<10; i++){  
-          const c = document.createElement('div');
-  c.textContent = '🎉';
-  // … остальной код по созданию и анимации конфетти
-        }
-      }
+function createConfetti() {
+  const msg  = document.getElementById('victoryMessage');
+  const rect = msg.getBoundingClientRect();
+
+  for (let side of [-1, 1]) {
+    for (let i = 0; i < 10; i++) {
+      const c = document.createElement('div');
+      c.textContent = '🎉';
+      c.style.position = 'absolute';
+      // рассчитываем X-координату (с учётом стороны и случайного разброса)
+      c.style.left = rect.left + rect.width/2 + side * (20 + Math.random() * rect.width/2) + 'px';
+      // стартуем из верхней границы сообщения
+      c.style.top  = rect.top + window.scrollY + 'px';
+      c.style.fontSize  = '24px';
+      c.style.animation = 'rise 3s ease-out forwards';
+
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 3000);
     }
-    // остальной скрипт без изменений
+  }
+}
 
     window.onload = resetGame;
   </script>
