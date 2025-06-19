@@ -68,10 +68,12 @@
       position: absolute;
       top: 100px;
       bottom: 0;
-      left: 0;
-      right: 0;
+      /* Сужаем поле и центрируем */
+      width: 90%;
+      left: 50%;
+      transform: translateX(-50%);
       background: rgba(0,0,0,0.5);
-      overflow: hidden;
+      overflow: auto; /* changed from hidden to auto to prevent clipping */
     }
 
     /* Таблица */
