@@ -85,17 +85,21 @@
     #boardWrapper table tr:first-child th {
       color: #fff !important;
       background-color: #2a3f2a !important;
-      font-size: 4px;
+      font-size: 6px;
     }
 
     /* Первая ячейка заголовка: SVG логотип */
     #boardWrapper table tr:first-child th:first-of-type {
-      padding: 4px;
+      padding: 6px;
     }
 
     tr { height: calc(100% / 22); }
     th, td {
-      border: 1px solid #666;
+      background-color: #c0c0c0;
+      border: 1px solid #777;
+      box-shadow:
+        inset 1px 1px 0 #fff,
+        inset -1px -1px 0 #999;
       text-align: center;
       vertical-align: middle;
       cursor: pointer;
@@ -104,9 +108,8 @@
       white-space: normal;
       word-break: break-word;
       word-wrap: break-word;
-      font-size: 10px;
-      background-color: #555;
-      color: #eee;
+      font-size: 20px;
+      color: #000;
     }
     th:first-of-type, td:first-of-type {
       width: 25%;
