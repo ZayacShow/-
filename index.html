@@ -315,6 +315,7 @@
           gameOver = true;
           document.getElementById('failureMessage').style.display = 'block';
           document.getElementById('restartBtn').style.display = 'inline-block';
+          ym(102875167, 'reachGoal', 'defeat');
           continue;
         }
         cell.textContent = v || '';
@@ -341,6 +342,7 @@
         document.getElementById('victoryMessage').style.display = 'block';
         createConfetti();
         document.getElementById('restartBtn').style.display = 'inline-block';
+        ym(102875167, 'reachGoal', 'victory');
       }
     }
 
